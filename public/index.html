@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="javascripts/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+<p>基于梦魇框架</p>
+<br><br>
+<label>爬虫地址：</label><input class="ip" type="text"><br>
+<hr/>
+<label>移动端(仅能用于宽高识别设备)</label><input type="checkbox" class="isPhone">
+<hr/>
+<label>懒加载解决：（请输入下拉的幅度）不填默认1000,最大值5000</label><br>
+<input type="text" placeholder="1000" class="delay">
+<hr/>
+<p>jq筛选规则</p>
+<label>规则：</label><input class="rule" type="text"><label>所赋予的对象名:</label><input type="text"
+                                                                                class="name"><label>类型</label><input
+        class="typE" placeholder="src/text" type="text"><br>
+<label>规则：</label><input class="rule" type="text"><label>所赋予的对象名:</label><input type="text"
+                                                                                class="name"><label>类型</label><input
+        class="typE" placeholder="src/text" type="text"><br>
+<label>规则：</label><input class="rule" type="text"><label>所赋予的对象名:</label><input type="text"
+                                                                                class="name"><label>类型</label><input
+        class="typE" placeholder="src/text" type="text"><br>
+<label>规则：</label><input class="rule" type="text"><label>所赋予的对象名:</label><input type="text"
+                                                                                class="name"><label>类型</label><input
+        class="typE" placeholder="src/text" type="text"><br>
+<label>规则：</label><input class="rule" type="text"><label>所赋予的对象名:</label><input type="text"
+                                                                                class="name"><label>类型</label><input
+        class="typE" placeholder="src/text" type="text"><br>
+<label>规则：</label><input class="rule" type="text"><label>所赋予的对象名:</label><input type="text"
+                                                                                class="name"><label>类型</label><input
+        class="typE" placeholder="src/text" type="text"><br>
+<label>规则：</label><input class="rule" type="text"><label>所赋予的对象名:</label><input type="text"
+                                                                                class="name"><label>类型</label><input
+        class="typE" placeholder="src/text" type="text"><br>
+<label>规则：</label><input class="rule" type="text"><label>所赋予的对象名:</label><input type="text"
+                                                                                class="name"><label>类型</label><input
+        class="typE" placeholder="src/text" type="text"><br>
+<hr/>
+<label>当前规则数量：</label><input type="text" class="RuleNum">
+<hr/>
+<label>需要爬虫的数量:</label><input type="text" class="GetNum" placeholder="不填写则默认返回">
+<hr/>
+<label>是否合并数组</label><input type="checkbox" class="is">
+<hr/>
+<input type="button" value="启动" id="action">
+<hr/>
+</body>
+<script>
+    document.getElementById('action').onclick = function () {
+        let goto;//爬虫地址
+        goto = document.getElementsByClassName('ip')[0].value;
+        let ruleNum = document.getElementsByClassName('RuleNum')[0].value;
+        let ruleArray = [];//爬虫规则
+        let IsReturnArray = document.getElementsByClassName('is')[0].checked;//是否合并数组
+        let IsPhone = document.getElementsByClassName('isPhone')[0].checked; //是否移动端
+        let delay = document.getElementsByClassName('delay')[0].value;        //获取懒加载
+        delay = delay.length === 0 ? delay = 1000 : delay;
+        delay = delay > 5000 ? delay = 5000 : delay;
+        delay = delay <= 0 ? delay = 1000 : delay
+        let GetNum = document.getElementsByClassName('GetNum')[0].value;
+        for (let i = 0; i < ruleNum; i++) {
+            console.log(document.getElementsByClassName('rule')[i].value)
+            ruleArray.push({
+                rule: document.getElementsByClassName('rule')[i].value,
+                name: document.getElementsByClassName('name')[i].value,
+                type: document.getElementsByClassName('typE')[i].value.length === 0 ? 'text' : 'src',
+            })
+        }
+        console.log(GetNum, goto, JSON.stringify(ruleArray), IsReturnArray, IsPhone, delay)
+
+        $.ajax({
+            type: 'post',
+            url: '/nightmare',
+            data: {goto, ruleArray: JSON.stringify(ruleArray), GetNum, IsReturnArray, IsPhone, delay},
+            success: function (res) {
+                if (IsReturnArray) {
+                    if (GetNum.length === 0||GetNum.value>=res.length) {
+                        console.log(res);
+                    } else {
+
+                        console.log(res = res.slice(0, GetNum));
+                    }
+                    console.log(JSON.stringify(res))
+                } else {
+                    if (GetNum.length === 0||GetNum.value>=res.length) {
+                        res.forEach(function (item) {
+                            console.log(item)
+                            console.log(JSON.stringify(item))
+                        })
+                    } else {
+                        res.forEach(function (item) {
+                            console.log(item = item.slice(0, GetNum))
+                            console.log(JSON.stringify(item))
+                        })
+                    }
+
+                }
+            }
+        })
+
+    }
+</script>
+</html>
